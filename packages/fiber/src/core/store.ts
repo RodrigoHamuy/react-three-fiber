@@ -9,6 +9,9 @@ export interface Intersection extends THREE.Intersection {
   eventObject: THREE.Object3D
 }
 
+const Timer = 'Timer' in THREE ? THREE.Timer : undefined
+type TimerType = typeof Timer
+
 export type Subscription = {
   ref: React.RefObject<RenderCallback>
   priority: number
@@ -88,7 +91,12 @@ export interface RootState {
   scene: THREE.Scene
   /** Default raycaster */
   raycaster: THREE.Raycaster
-  /** Default clock */
+  /** Default timer */
+  timer?: TimerType
+  /**
+   * Default clock
+   * @deprecated use `timer` instead
+   */
   clock: THREE.Clock
   /** Event layer interface, contains the event handler and the node they're connected to */
   events: EventManager<any>
@@ -197,6 +205,7 @@ export const createStore = (
       flat: false,
 
       controls: null,
+      timer: Timer ? new (Timer as any)() : undefined,
       clock: new THREE.Clock(),
       pointer,
       mouse: pointer,
@@ -260,6 +269,7 @@ export const createStore = (
           clock.start()
           clock.elapsedTime = 0
         }
+        ;(get().timer as any)?.reset()
         set(() => ({ frameloop }))
       },
       previousRoot: undefined,

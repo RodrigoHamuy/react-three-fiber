@@ -86,6 +86,26 @@ describe('hooks', () => {
     expect(frameCalls.length).toBeGreaterThan(0)
   })
 
+  it('exposes a timer when THREE.Timer is available and advances it each frame', async () => {
+    const TimerConstructor = (THREE as { Timer?: new () => unknown }).Timer
+    const timerRoot = createRoot(createCanvas())
+    const store = await act(async () => (await timerRoot.configure({ frameloop: 'never' })).render(<group />))
+    const { timer } = store.getState()
+
+    if (TimerConstructor) {
+      expect(timer).toBeInstanceOf(TimerConstructor)
+
+      const before = timer!.getElapsed()
+      timer!.update(performance.now())
+      expect(timer!.getElapsed()).toBeGreaterThanOrEqual(before)
+      expect(Number.isFinite(timer!.getElapsed())).toBe(true)
+    } else {
+      expect(timer).toBeUndefined()
+    }
+
+    await act(async () => timerRoot.unmount())
+  })
+
   it('can handle useLoader hook', async () => {
     const MockMesh = new THREE.Mesh()
     MockMesh.name = 'Scene'

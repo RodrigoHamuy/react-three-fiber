@@ -68,6 +68,8 @@ function update(timestamp: number, state: RootState, frame?: XRFrame) {
     state.clock.elapsedTime = timestamp
   }
 
+  ;(state.timer as any)?.update(timestamp)
+
   // Call subscribers (useFrame)
   subscribers = state.internal.subscribers
   for (let i = 0; i < subscribers.length; i++) {
