@@ -11,7 +11,9 @@ export interface Intersection extends THREE.Intersection {
 }
 
 type TimerType = (typeof THREE & { Timer?: unknown })['Timer'] extends new () => infer T ? T : any
-const getTimer = (): (new () => TimerType) | undefined => (catalogue as any).Timer
+function getTimer() {
+  if ('Timer' in catalogue) return new catalogue.Timer() as TimerType
+}
 
 export type Subscription = {
   ref: React.RefObject<RenderCallback>
@@ -206,10 +208,7 @@ export const createStore = (
       flat: false,
 
       controls: null,
-      timer: (() => {
-        const Timer = getTimer()
-        return Timer ? new Timer() : undefined
-      })(),
+      timer: getTimer(),
       clock: new THREE.Clock(),
       pointer,
       mouse: pointer,
