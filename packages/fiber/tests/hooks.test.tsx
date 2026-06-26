@@ -95,10 +95,10 @@ describe('hooks', () => {
     if (TimerConstructor) {
       expect(timer).toBeInstanceOf(TimerConstructor)
 
-      const before = timer!.getElapsed()
-      timer!.update(performance.now())
-      expect(timer!.getElapsed()).toBeGreaterThanOrEqual(before)
-      expect(Number.isFinite(timer!.getElapsed())).toBe(true)
+      const before = (timer as any).getElapsed()
+      ;(timer as any).update(performance.now())
+      expect((timer as any).getElapsed()).toBeGreaterThanOrEqual(before)
+      expect(Number.isFinite((timer as any).getElapsed())).toBe(true)
     } else {
       expect(timer).toBeUndefined()
     }

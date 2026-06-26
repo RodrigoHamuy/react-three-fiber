@@ -68,7 +68,7 @@ function update(timestamp: number, state: RootState, frame?: XRFrame) {
     state.clock.elapsedTime = timestamp
   }
 
-  state.timer?.update(timestamp)
+  ;(state.timer as any)?.update(timestamp)
 
   // Call subscribers (useFrame)
   subscribers = state.internal.subscribers

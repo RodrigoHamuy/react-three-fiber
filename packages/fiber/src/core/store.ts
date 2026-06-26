@@ -10,9 +10,10 @@ export interface Intersection extends THREE.Intersection {
   eventObject: THREE.Object3D
 }
 
-type TimerType = (typeof THREE & { Timer?: unknown })['Timer'] extends new () => infer T ? T : any
-function getTimer() {
+type TimerType = (typeof THREE & { Timer?: unknown })['Timer'] extends new () => infer T ? T : undefined
+function getTimer(): TimerType {
   if ('Timer' in catalogue) return new catalogue.Timer() as TimerType
+  return undefined as any as TimerType
 }
 
 export type Subscription = {
@@ -95,7 +96,7 @@ export interface RootState {
   /** Default raycaster */
   raycaster: THREE.Raycaster
   /** Default timer */
-  timer?: TimerType
+  timer: TimerType
   /**
    * Default clock
    * @deprecated use `timer` instead
@@ -272,7 +273,7 @@ export const createStore = (
           clock.start()
           clock.elapsedTime = 0
         }
-        get().timer?.reset()
+        ;(get().timer as any)?.reset()
         set(() => ({ frameloop }))
       },
       previousRoot: undefined,
