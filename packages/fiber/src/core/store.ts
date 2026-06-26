@@ -4,14 +4,14 @@ import { type StoreApi } from 'zustand'
 import { createWithEqualityFn, type UseBoundStoreWithEqualityFn } from 'zustand/traditional'
 import type { DomEvent, EventManager, PointerCaptureTarget, ThreeEvent } from './events'
 import { calculateDpr, type Camera, isOrthographicCamera, updateCamera } from './utils'
+import { catalogue } from './reconciler'
 
 export interface Intersection extends THREE.Intersection {
   eventObject: THREE.Object3D
 }
 
-const _Timer = 'Timer' in THREE ? THREE.Timer : undefined
-type TimerType = typeof _Timer extends new () => infer T ? T : any
-const Timer = _Timer as TimerType
+type TimerType = (typeof THREE & { Timer?: unknown })['Timer'] extends new () => infer T ? T : any
+const getTimer = (): (new () => TimerType) | undefined => (catalogue as any).Timer
 
 export type Subscription = {
   ref: React.RefObject<RenderCallback>
@@ -206,7 +206,10 @@ export const createStore = (
       flat: false,
 
       controls: null,
-      timer: Timer ? new Timer() : undefined,
+      timer: (() => {
+        const Timer = getTimer()
+        return Timer ? new Timer() : undefined
+      })(),
       clock: new THREE.Clock(),
       pointer,
       mouse: pointer,

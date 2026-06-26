@@ -135,7 +135,7 @@ interface HostConfig {
   TransitionStatus: null
 }
 
-const catalogue: Catalogue = {}
+export const catalogue: Catalogue = {}
 
 const PREFIX_REGEX = /^three(?=[A-Z])/
 
