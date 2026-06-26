@@ -9,8 +9,9 @@ export interface Intersection extends THREE.Intersection {
   eventObject: THREE.Object3D
 }
 
-const Timer = 'Timer' in THREE ? THREE.Timer : undefined
-type TimerType = typeof Timer
+const _Timer = 'Timer' in THREE ? THREE.Timer : undefined
+type TimerType = typeof _Timer extends new () => infer T ? T : any
+const Timer = _Timer as TimerType
 
 export type Subscription = {
   ref: React.RefObject<RenderCallback>
@@ -205,7 +206,7 @@ export const createStore = (
       flat: false,
 
       controls: null,
-      timer: Timer ? new (Timer as any)() : undefined,
+      timer: Timer ? new Timer() : undefined,
       clock: new THREE.Clock(),
       pointer,
       mouse: pointer,
@@ -269,7 +270,7 @@ export const createStore = (
           clock.start()
           clock.elapsedTime = 0
         }
-        ;(get().timer as any)?.reset()
+        get().timer?.reset()
         set(() => ({ frameloop }))
       },
       previousRoot: undefined,
